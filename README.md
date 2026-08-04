@@ -28,7 +28,7 @@ todo mundo desenhava do zero em todo projeto novo.
 |---|---|---|
 | [djobs](https://github.com/ianptkcs/djobs) | TUI de jobs agendados (systemd) | migrado |
 | [tabelaradar](https://github.com/TabelaDev/tabelaradar) | TUI de fiscalização de repos git | migrado |
-| [tabelakanban](https://github.com/ianptkcs/tabelakanban) | TUI kanban | nasceu consumindo |
+| [tabelakanban](https://github.com/TabelaDev/tabelakanban) | TUI kanban | nasceu consumindo |
 
 ## Instalação
 
