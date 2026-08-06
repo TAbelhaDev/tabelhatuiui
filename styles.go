@@ -8,23 +8,25 @@ import (
 )
 
 // Header renders the top status bar: primary accent background, base text,
-// full width. No internal padding — the app's outer margin is what keeps it
-// off the terminal edges.
+// full width, flush against the terminal edges. Horizontal padding gives the
+// title an inset from the edges.
 func (t Theme) Header(width int) lipgloss.Style {
 	return lipgloss.NewStyle().
 		Background(t.Primary).
 		Foreground(t.Base).
 		Bold(true).
-		Width(width)
+		Width(width).
+		Padding(0, 2)
 }
 
 // Footer renders the bottom help/status bar: mantle background, subtext
-// text, full width.
+// text, full width, flush against the terminal edges.
 func (t Theme) Footer(width int) lipgloss.Style {
 	return lipgloss.NewStyle().
 		Background(t.Mantle).
 		Foreground(t.Subtext0).
-		Width(width)
+		Width(width).
+		Padding(0, 2)
 }
 
 // Panel intentionally has no Width(): calling Width() on a style makes
