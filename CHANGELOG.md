@@ -12,4 +12,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Header` agora usa o background do accent (Primary) com texto Base, em vez
   de mantle + texto accent.
 - `Modal` passou a usar borda do accent (Primary) no lugar de lavender.
-- Padding horizontal de `Header` e `Footer` reduzido de 2 para 1 coluna.
+- Padding horizontal de `Header` e `Footer` removido — os apps controlam a
+  margem externa.
