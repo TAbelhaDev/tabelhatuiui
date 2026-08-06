@@ -7,12 +7,12 @@ import (
 	"github.com/charmbracelet/x/ansi"
 )
 
-// Header renders the top status bar: mantle background, primary accent text,
+// Header renders the top status bar: primary accent background, base text,
 // full width.
 func (t Theme) Header(width int) lipgloss.Style {
 	return lipgloss.NewStyle().
-		Background(t.Mantle).
-		Foreground(t.Primary).
+		Background(t.Primary).
+		Foreground(t.Base).
 		Bold(true).
 		Width(width).
 		Padding(0, 2)
@@ -58,12 +58,12 @@ func (t Theme) Dim() lipgloss.Style {
 	return lipgloss.NewStyle().Foreground(t.Overlay0).Background(t.Base)
 }
 
-// Modal is a centered overlay box with a lavender border — used by djobs for
-// its form/confirm dialogs, generic enough to live in the lib.
+// Modal is a centered overlay box with an accent (Primary) border — used by
+// djobs for its form/confirm dialogs, generic enough to live in the lib.
 func (t Theme) Modal() lipgloss.Style {
 	return lipgloss.NewStyle().
 		Border(lipgloss.RoundedBorder()).
-		BorderForeground(t.Lavender).
+		BorderForeground(t.Primary).
 		Background(t.Base).
 		Padding(1, 2)
 }
