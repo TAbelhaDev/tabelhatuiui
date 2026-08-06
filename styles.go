@@ -8,14 +8,15 @@ import (
 )
 
 // Header renders the top status bar: primary accent background, base text,
-// full width.
+// full width. Horizontal padding is kept small (1) so the band reads as a
+// title without eating much of the screen.
 func (t Theme) Header(width int) lipgloss.Style {
 	return lipgloss.NewStyle().
 		Background(t.Primary).
 		Foreground(t.Base).
 		Bold(true).
 		Width(width).
-		Padding(0, 2)
+		Padding(0, 1)
 }
 
 // Footer renders the bottom help/status bar: mantle background, subtext
@@ -25,7 +26,7 @@ func (t Theme) Footer(width int) lipgloss.Style {
 		Background(t.Mantle).
 		Foreground(t.Subtext0).
 		Width(width).
-		Padding(0, 2)
+		Padding(0, 1)
 }
 
 // Panel intentionally has no Width(): calling Width() on a style makes
