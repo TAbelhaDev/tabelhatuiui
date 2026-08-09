@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `KeyRegistry` — fonte única de verdade das keybindings: defaults
+  registrados em código + overrides por ação persistidos em JSON
+  (`bindings.json`). `Resolve(id)` devolve o binding efetivo (override vence),
+  `Bindings()` alimenta Footer/HelpModal, `Set` valida conflito de tecla,
+  `Reset`/`ResetAll` restauram os defaults (e apagam o arquivo quando nada
+  está customizado).
+- `SettingsModal` — overlay de edição de teclas: navega pela lista de ações
+  (j/k, g/G, pgup/pgdn), `enter` entra no modo "pressione a nova tecla",
+  `r` reseta uma ação, `R` reseta tudo, mostra conflito em vermelho e marca
+  com `●` as ações customizadas.
+- `HelpSection.BindingsFn` — provider dinâmico de bindings pro HelpModal,
+  pra ele refletir rebinds feitos no SettingsModal na hora.
+
 ## [0.2.0] - 2026-08-09
 
 ### Added

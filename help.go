@@ -10,10 +10,21 @@ import (
 
 // HelpSection is one titled group of keybindings in the help modal — for
 // example "Navegação" with the panel-switching keys, "Ações" with the
-// per-app commands.
+// per-app commands. Bindings are static; BindingsFn (if set) supplies them
+// live at render time — pass one backed by a KeyRegistry so the help modal
+// reflects rebinds instantly.
 type HelpSection struct {
-	Title    string
-	Bindings []Binding
+	Title      string
+	Bindings   []Binding
+	BindingsFn func() []Binding
+}
+
+// resolved returns the section's current bindings (live or static).
+func (s HelpSection) resolved() []Binding {
+	if s.BindingsFn != nil {
+		return s.BindingsFn()
+	}
+	return s.Bindings
 }
 
 // Binding is the keybinding type the help modal and footer consume. It's the
@@ -149,7 +160,7 @@ func (m *HelpModal) contentLines(theme Theme) []string {
 	for _, sec := range m.sections {
 		var keys, descs []string
 		keyW := 0
-		for _, b := range sec.Bindings {
+		for _, b := range sec.resolved() {
 			if !b.Enabled() {
 				continue
 			}
