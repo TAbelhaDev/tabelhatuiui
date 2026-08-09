@@ -48,32 +48,59 @@ Resolve o tema no seu `main` e usa os estilos onde precisar:
 package main
 
 import (
-	"path/filepath"
-
+	"github.com/charmbracelet/bubbles/key"
 	"github.com/ianptkcs/tabelatuiui"
 )
 
-var theme = tuiui.ResolveTheme(
-	tuiui.EnvOr("MEUAPP_DMS_SETTINGS", filepath.Join(tuiui.HomeDir(), ".config", "DankMaterialShell", "settings.json")),
-	tuiui.EnvOr("MEUAPP_ACCENT", "mauve"),
+// Theme via env: lê MEUAPP_DMS_SETTINGS e MEUAPP_ACCENT (padrão mauve).
+var theme = tuiui.NewThemeFromEnv("MEUAPP")
+
+var (
+	keyQuit    = key.NewBinding(key.WithKeys("q", "ctrl+c"), key.WithHelp("q", "sair"))
+	keyRefresh = key.NewBinding(key.WithKeys("r"), key.WithHelp("r", "atualizar"))
+	keyNavL    = key.NewBinding(key.WithKeys("ctrl+l"), key.WithHelp("ctrl+l", "próx. painel"))
 )
+
+// Footer: contexto à esquerda + hints à direita, gerados das bindings.
+footer := tuiui.NewFooter(keyQuit, keyRefresh, keyNavL).
+	Status("3 jobs").
+	Render(80, theme)
+
+// HelpModal: o "?" de todo TUI, listando as bindings em seções.
+helpModal := tuiui.NewHelpModal(tuiui.HelpSection{
+	Title:    "Navegação",
+	Bindings: []tuiui.Binding{keyNavL},
+})
 
 func main() {
 	header := theme.Header(80).Render("meu app")
-	footer := theme.Footer(80).Render("navegar · q sair")
 	panel := theme.Panel(true).Render(tuiui.PadLines("conteúdo", 40))
 	modal := theme.Modal().Render("tem certeza?")
 	_ = header + footer + panel + modal
+	_ = helpModal
 }
 ```
 
 ### Resolução de tema
 
-`ResolveTheme(settingsPath, fallbackAccent)` lê o `settings.json` do
+`NewThemeFromEnv(appPrefix)` é o atalho recomendado: lê
+`<PREFIX>_DMS_SETTINGS` (padrão `~/.config/DankMaterialShell/settings.json`)
+e `<PREFIX>_ACCENT` (padrão `mauve`) e chama `ResolveTheme`. Para controle
+total, `ResolveTheme(settingsPath, fallbackAccent)` lê o `settings.json` do
 DankMaterialShell instalado e devolve o hex do accent que o DMS está
 renderizando hoje (mesmo lookup que o próprio DMS faz). Se o DMS não está
-instalado/for outro tema, cai no accent Catppuccin passado (padrão `mauve`).
-O prefixo de env é escolha de cada app — a lib é agnóstica.
+instalado/for outro tema, cai no accent Catppuccin passado.
+
+### Footer e HelpModal
+
+- `NewFooter(bindings...)` monta a barra de status/help. O lado direito é
+  gerado das bindings, então os hints nunca divergem do que `key.Matches`
+  aceita. `Status()` define o contexto esquerdo; `Render(width, theme)`
+  devolve a linha pronta. Hints que não cabem são dropados por token (` · `).
+- `NewHelpModal(sections...)` cria um overlay centralizado com as bindings em
+  seções. Bind em `"?"` (ou outra tecla), chame `Update()` (retorna `true`
+  quando o modal está aberto — o app não deve processar as teclas dele
+  enquanto isso), `SetSize()` no resize, e renderize por último no `View`.
 
 ### Helpers de layout
 

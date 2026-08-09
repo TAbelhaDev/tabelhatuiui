@@ -3,6 +3,7 @@ package tuiui
 import (
 	"encoding/json"
 	"os"
+	"path/filepath"
 
 	catppuccin "github.com/catppuccin/go"
 	"github.com/charmbracelet/lipgloss"
@@ -35,6 +36,18 @@ type Theme struct {
 	Blue     lipgloss.Color
 	Pink     lipgloss.Color
 	Lavender lipgloss.Color
+}
+
+// NewThemeFromEnv builds the theme like ResolveTheme, but sources the DMS
+// settings path and the fallback accent from environment variables derived
+// from appPrefix — the same lookup every ianptkcs TUI's theme.go hand-rolled:
+//
+//	<PREFIX>_DMS_SETTINGS  (default ~/.config/DankMaterialShell/settings.json)
+//	<PREFIX>_ACCENT        (default "mauve")
+func NewThemeFromEnv(appPrefix string) Theme {
+	dmsSettingsPath := EnvOr(appPrefix+"_DMS_SETTINGS", filepath.Join(HomeDir(), ".config", "DankMaterialShell", "settings.json"))
+	fallbackAccent := EnvOr(appPrefix+"_ACCENT", "mauve")
+	return ResolveTheme(dmsSettingsPath, fallbackAccent)
 }
 
 // ResolveTheme builds the theme: Primary comes from the DMS settings.json at

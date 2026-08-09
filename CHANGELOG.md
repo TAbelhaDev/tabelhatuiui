@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-08-09
+
+### Added
+
+- `NewThemeFromEnv(appPrefix)` — resolve o tema lendo `<PREFIX>_DMS_SETTINGS`
+  e `<PREFIX>_ACCENT` do ambiente, substituindo o boilerplate de `theme.go`
+  que todo app repetia.
+- `Footer` — builder da barra de status/help: contexto à esquerda + hints de
+  teclado à direita, gerados a partir de uma slice de `key.Binding` (nunca
+  mais drift entre o que o `Update` aceita e o que o footer mostra). O
+  overflow é truncado por token (` · `) em vez de caractere.
+- `HelpModal` — overlay centralizado listando todas as keybindings em seções
+  (o "?" de todo TUI), com scroll e fechamento por `q`/`esc`. Só precisa do
+  tema; a lib cuida do posicionamento.
+- `Binding` — alias para `key.Binding` (bubbles/key), exposto pelo pacote
+  pra apps não precisarem importar a bubbles diretamente pra declarar atalhos.
+
+### Changed
+
+- `tabelatuiui` agora depende de `bubbles`/`bubbletea` (para os tipos
+  `key.Binding` usados por `Footer`/`HelpModal`).
+
 ## [0.1.1] - 2026-08-09
 
 ### Changed
