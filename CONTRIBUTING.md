@@ -6,10 +6,7 @@ Bubble Tea — não um framework de UI).
 
 ## Reportando bugs / sugerindo features
 
-Pedidos de feature (inclusive de agents) seguem o fluxo `requests/`: veja
-`requests/README.md` — copie `requests/_template.md` para
-`requests/<AAAAMMDD>-<feature>.md` e preencha. Bugs continuam sendo issues de
-bug no [GitHub](../../issues/new/choose).
+Abra uma [issue](../../issues/new/choose) usando o template apropriado.
 
 ## Enviando um PR
 
