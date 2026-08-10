@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/key"
@@ -28,9 +29,12 @@ type Action struct {
 // the same effective binding. Create one, Register every action, Load(), then
 // Resolve in Update and feed Bindings() to Footer/HelpModal.
 //
-// The persisted format is a flat map of action ID to the custom keys; the
-// file is written only when at least one override exists (all-resets delete
-// it), and is removed when the last override is cleared.
+// The config file is the primary customization flow (config-file-first): the
+// user edits keybindings.json and the app calls Reload() on a reload key (or
+// per View) to pick the edit up without restarting. The persisted format is a
+// flat map of action ID to the custom keys; the file is written only when at
+// least one override exists (all-resets delete it), and is removed when the
+// last override is cleared.
 type KeyRegistry struct {
 	path   string
 	order  []string
@@ -176,25 +180,38 @@ type registryFile struct {
 	Bindings map[string][]string `json:"bindings"`
 }
 
-// Load reads custom overrides from the config file. A missing file is not an
-// error (no overrides yet).
+// Load reads custom overrides from the config file once. A missing file is
+// not an error (no overrides yet). See Reload for the config-file-first flow.
 func (r *KeyRegistry) Load() error {
+	_, err := r.Reload()
+	return err
+}
+
+// Reload re-reads the config file, making the on-disk keybindings.json the
+// source of truth again — call it from the app's reload key (or once per
+// View) so an external edit to the file is picked up without restarting. It
+// reports whether the overrides changed on disk since the last load/save (a
+// deleted file counts as a change back to pure defaults).
+func (r *KeyRegistry) Reload() (bool, error) {
+	prev := r.custom
 	data, err := os.ReadFile(r.path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return nil
+			r.custom = map[string][]string{}
+			return len(prev) > 0, nil
 		}
-		return err
+		return false, err
 	}
 	var f registryFile
 	if err := json.Unmarshal(data, &f); err != nil {
-		return err
+		return false, err
 	}
+	if f.Bindings == nil {
+		f.Bindings = map[string][]string{}
+	}
+	changed := !reflect.DeepEqual(prev, f.Bindings)
 	r.custom = f.Bindings
-	if r.custom == nil {
-		r.custom = map[string][]string{}
-	}
-	return nil
+	return changed, nil
 }
 
 // Save persists the current overrides. With nothing overridden it deletes

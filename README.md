@@ -103,29 +103,48 @@ instalado/for outro tema, cai no accent Catppuccin passado.
   enquanto isso), `SetSize()` no resize, e renderize por último no `View`.
   Seções podem usar `BindingsFn` pra buscar os bindings vivos a cada render.
 
-### Keybindings customizáveis (KeyRegistry + SettingsModal)
+### Keybindings customizáveis (config-file-first)
 
-O `KeyRegistry` centraliza as keybindings de um app: defaults em código +
-overrides do usuário persistidos em JSON. Crie, registre as ações e carregue:
+O `KeyRegistry` centraliza as keybindings de um app e faz do arquivo de config
+a **fonte da verdade**: defaults registrados em código + overrides do usuário
+em `<ConfigDir()>/<app>/keybindings.json`. Crie, registre as ações e carregue:
 
 ```go
 reg := tuiui.NewKeyRegistry(filepath.Join(tuiui.ConfigDir(), "meuapp", "keybindings.json"))
 reg.RegisterMany(
 	tuiui.Action{ID: "quit", Help: "sair", Keys: []string{"q", "ctrl+c"}},
-	tuiui.Action{ID: "nav", Help: "mover", Keys: []string{"j", "k"}, Label: "j/k"},
+	tuiui.Action{ID: "nav", Help: "mover", Keys: []string{"ctrl+h", "ctrl+l", "ctrl+j", "ctrl+k"}, Label: "ctrl+h/j/k/l"},
 )
 if err := reg.Load(); err != nil { /* arquivo corrompido: usa defaults */ }
 ```
 
-- **Dispatch**: `case key.Matches(msg, reg.Resolve("quit")):`
-- **Footer**: `tuiui.NewFooter(reg.Bindings()...)` — reflete rebinds na hora.
-- **Help modal**: passe `BindingsFn: reg.Bindings` na seção.
-- **Settings**: `tuiui.NewSettingsModal(reg)` — bind em `","`/`"s"`, use o
-  `Update()` e renderize por último. O usuário navega a lista, `enter` rebind,
-  `r`/`R` resetam, conflitos aparecem em vermelho, custom marca com `●`.
+O formato é `{"bindings": {"<id>": ["tecla", ...]}}`, onde `<id>` é o `ID` da
+`Action`; o arquivo só existe enquanto houver pelo menos um override. O fluxo
+primário é **editar o arquivo e recarregar** — exponha uma tecla de reload (ou
+chame `Reload()` a cada `View()`) pra edição externa valer sem reiniciar:
 
-O arquivo é `{"bindings": {"<id>": ["tecla", ...]}}`, escrito só quando existe
-override; resetar tudo apaga o arquivo.
+```go
+case key.Matches(msg, reg.Resolve("reload")): // ex.: "r"
+	if changed, err := reg.Reload(); err != nil {
+		status = theme.Error().Render("keybindings: " + err.Error())
+	} else if changed {
+		status = theme.Success().Render("keybindings recarregados")
+	}
+```
+
+- **Dispatch**: `case key.Matches(msg, reg.Resolve("quit")):`
+- **Footer**: `tuiui.NewFooter(reg.Bindings()...)` — reflete rebinds e reloads
+  na hora.
+- **Help modal**: passe `BindingsFn: reg.Bindings` na seção.
+- **Hints agrupados (padrão canônico de navegação)**: uma única ação com
+  várias teclas + `Label` (ex.: `nav` com `ctrl+h/l/j/k`, `Label:
+  "ctrl+h/j/k/l"`) vira **uma linha** no footer/help em vez de N entradas; o
+  dispatch por direção fica com o app (position-based), não com a tecla. Use
+  `Label` quando as teclas compartilham o mesmo conceito.
+- **SettingsModal (conveniência opcional)**: `tuiui.NewSettingsModal(reg)` —
+  bind em `","`/`"s"` abre a lista de ações com rebind interativo
+  (`enter` rebind, `r`/`R` resetam, conflitos em vermelho, custom marca com
+  `●`). Com o fluxo de arquivo acima ele vira um atalho, não o único caminho.
 
 ### Helpers de layout
 

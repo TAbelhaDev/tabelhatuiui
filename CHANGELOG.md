@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `KeyRegistry.Reload()` — re-lê o arquivo de keybindings do disco (fonte da
+  verdade) e reporta se os overrides mudaram; `Load()` agora delega pra ele.
+  Edições externas no `keybindings.json` passam a valer chamando `Reload()`
+  numa tecla de recarga (ou a cada `View()`), sem reiniciar.
+
+### Changed
+
+- Fluxo de keybindings documentado como **config-file-first** no README:
+  editar `keybindings.json` + recarregar é o caminho primário, e `Label`
+  multi-tecla (ex.: `nav` com `ctrl+h/j/k/l`) é o padrão canônico de hints
+  agrupados — uma linha no footer/help em vez de uma entrada por tecla.
+  `SettingsModal` fica como conveniência opcional, não o único caminho.
+
 - `KeyRegistry` — fonte única de verdade das keybindings: defaults
   registrados em código + overrides por ação persistidos em JSON
   (`bindings.json`). `Resolve(id)` devolve o binding efetivo (override vence),
