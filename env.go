@@ -24,6 +24,13 @@ func ConfigDir() string {
 	return filepath.Join(HomeDir(), ".config")
 }
 
+// ConfigPath is ~/.config/<app>/<file>, the canonical location of an app's
+// own config files (config.toml, keybindings.json). It honors XDG_CONFIG_HOME
+// through ConfigDir, so callers never need to resolve the base themselves.
+func ConfigPath(app, file string) string {
+	return filepath.Join(ConfigDir(), app, file)
+}
+
 // EnvOr returns the value of env var `key`, or `fallback` when it's unset or
 // empty.
 func EnvOr(key, fallback string) string {

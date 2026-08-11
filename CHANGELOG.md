@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `Config[T]` — settings de app em TOML (`<ConfigDir()>/<app>/config.toml`),
+  seguindo o mesmo modelo config-file-first do `KeyRegistry`:
+  `NewConfig(path, defaults)` + `Load()`/`Reload()`/`Get()`. O merge é por
+  chave — o arquivo só sobrescreve os campos que aparecem nele, o resto fica
+  no default — e cada app define o próprio schema (`T`). Arquivo ausente não é
+  erro; arquivo malformado devolve erro **preservando o valor anterior**, pra
+  um typo no meio da edição não derrubar um app rodando pros defaults.
+
+- `ConfigPath(app, file)` — resolve `~/.config/<app>/<file>` respeitando
+  `XDG_CONFIG_HOME`, substituindo o `filepath.Join(ConfigDir(), app, file)`
+  que era copiado em cada app.
+
 - `KeyRegistry.Reload()` — re-lê o arquivo de keybindings do disco (fonte da
   verdade) e reporta se os overrides mudaram; `Load()` agora delega pra ele.
   Edições externas no `keybindings.json` passam a valer chamando `Reload()`

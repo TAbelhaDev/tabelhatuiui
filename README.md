@@ -110,7 +110,7 @@ a **fonte da verdade**: defaults registrados em código + overrides do usuário
 em `<ConfigDir()>/<app>/keybindings.json`. Crie, registre as ações e carregue:
 
 ```go
-reg := tuiui.NewKeyRegistry(filepath.Join(tuiui.ConfigDir(), "meuapp", "keybindings.json"))
+reg := tuiui.NewKeyRegistry(tuiui.ConfigPath("meuapp", "keybindings.json"))
 reg.RegisterMany(
 	tuiui.Action{ID: "quit", Help: "sair", Keys: []string{"q", "ctrl+c"}},
 	tuiui.Action{ID: "nav", Help: "mover", Keys: []string{"ctrl+h", "ctrl+l", "ctrl+j", "ctrl+k"}, Label: "ctrl+h/j/k/l"},
@@ -145,6 +145,65 @@ case key.Matches(msg, reg.Resolve("reload")): // ex.: "r"
   bind em `","`/`"s"` abre a lista de ações com rebind interativo
   (`enter` rebind, `r`/`R` resetam, conflitos em vermelho, custom marca com
   `●`). Com o fluxo de arquivo acima ele vira um atalho, não o único caminho.
+
+### Config em TOML (config-file-first)
+
+`Config[T]` é o equivalente do `KeyRegistry` pras demais preferências do app:
+defaults compilados no código + overrides do usuário em
+`<ConfigDir()>/<app>/config.toml`. Cada app define seu próprio `T`; a lib não
+opina sobre o schema.
+
+```go
+type config struct {
+	Editor string `toml:"editor"`
+	Layout struct {
+		SidebarWidth int `toml:"sidebar_width"`
+	} `toml:"layout"`
+}
+
+var defaults = config{Editor: "nvim"} // defaults.Layout.SidebarWidth = 22, etc.
+
+cfg := tuiui.NewConfig(tuiui.ConfigPath("meuapp", "config.toml"), defaults)
+if err := cfg.Load(); err != nil { /* arquivo corrompido: mantém os defaults */ }
+
+width := cfg.Get().Layout.SidebarWidth
+```
+
+O merge é por chave: o TOML só sobrescreve os campos que **aparecem no
+arquivo**, e todo o resto fica com o valor de `defaults`. Slices são
+substituídas inteiras (um `roots = [...]` no arquivo troca a lista toda, não
+concatena). Um arquivo ausente não é erro — o app roda em defaults puros.
+
+Assim como nas keybindings, o fluxo primário é **editar o arquivo e
+recarregar**, na mesma tecla:
+
+```go
+case key.Matches(msg, reg.Resolve("reload")): // f5
+	kChanged, kErr := reg.Reload()
+	cChanged, cErr := cfg.Reload()
+	switch {
+	case kErr != nil || cErr != nil:
+		status = theme.Error().Render("config: " + errors.Join(kErr, cErr).Error())
+	case kChanged || cChanged:
+		status = theme.Success().Render("config recarregada")
+	default:
+		status = theme.Muted().Render("config sem mudanças")
+	}
+```
+
+`Reload()` reporta se a config **efetiva** mudou, e um TOML malformado devolve
+erro **preservando o valor anterior** — um typo no meio da edição não derruba
+um app rodando pros defaults. Nem todo campo é recarregável a quente (path de
+banco, número de workers): `Reload()` diz que mudou, e cabe ao app decidir o
+que fazer com isso.
+
+> `T` deve ser um struct de valores. Campos ponteiro/map/slice são
+> compartilhados com o `defaults` até o arquivo sobrescrevê-los, então não
+> mute o que o `Get()` devolve.
+
+**`ConfigPath(app, file)`** resolve `~/.config/<app>/<file>` respeitando
+`XDG_CONFIG_HOME` — use tanto pro `config.toml` quanto pro
+`keybindings.json`, em vez de montar o path na mão.
 
 ### Helpers de layout
 
