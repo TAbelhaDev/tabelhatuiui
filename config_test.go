@@ -20,7 +20,7 @@ type testConfig struct {
 func testDefaults() testConfig {
 	return testConfig{
 		Editor: "nvim",
-		Roots:  []string{"~/codigo/pessoal", "~/codigo/tabeladev"},
+		Roots:  []string{"~/codigo/pessoal", "~/codigo/tabelhadev"},
 		Layout: layoutSection{SidebarWidth: 22, CardHeight: 4},
 	}
 }
@@ -157,7 +157,7 @@ func TestConfigReloadDeletedFileFallsBackToDefaults(t *testing.T) {
 
 func TestConfigPath(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", "/tmp/xdg-test")
-	if got, want := ConfigPath("tabelaradar", "config.toml"), "/tmp/xdg-test/tabelaradar/config.toml"; got != want {
+	if got, want := ConfigPath("tabelharadar", "config.toml"), "/tmp/xdg-test/tabelharadar/config.toml"; got != want {
 		t.Fatalf("ConfigPath() = %q, want %q", got, want)
 	}
 }

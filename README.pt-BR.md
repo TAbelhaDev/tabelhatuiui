@@ -1,12 +1,12 @@
 <div align="center">
 
-# TabelaTuiUI
+# TAbelhaTuiUI
 
 **Tema + chrome compartilhado dos TUIs Bubble Tea do ianptkcs.**
 
 [English](README.md) · **Português**
 
-[![Go Version](https://img.shields.io/github/go-mod/go-version/TabelaDev/tabelatuiui?style=flat-square&logo=go&logoColor=white&color=00ADD8)](go.mod)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/TAbelhaDev/tabelhatuiui?style=flat-square&logo=go&logoColor=white&color=00ADD8)](go.mod)
 [![Built with Bubble Tea](https://img.shields.io/badge/built%20with-Bubble%20Tea-ff69b4?style=flat-square)](https://github.com/charmbracelet/bubbletea)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue?style=flat-square)](LICENSE)
 
@@ -31,15 +31,15 @@ todo mundo desenhava do zero em todo projeto novo.
 | Projeto | O que é | De onde veio |
 |---|---|---|
 | [djobs](https://github.com/ianptkcs/dankjobs) | TUI de jobs agendados (systemd) | migrado |
-| [tabelaradar](https://github.com/TabelaDev/tabelaradar) | TUI de fiscalização de repos git | migrado |
-| [tabelakanban](https://github.com/TabelaDev/tabelakanban) | TUI kanban | nasceu consumindo |
+| [tabelharadar](https://github.com/TAbelhaDev/tabelharadar) | TUI de fiscalização de repos git | migrado |
+| [tabelhakanban](https://github.com/TAbelhaDev/tabelhakanban) | TUI kanban | nasceu consumindo |
 
 ## Instalação
 
 Requer Go 1.26+.
 
 ```bash
-go get github.com/ianptkcs/tabelatuiui@latest
+go get github.com/ianptkcs/tabelhatuiui@latest
 ```
 
 ## Uso
@@ -51,7 +51,7 @@ package main
 
 import (
 	"github.com/charmbracelet/bubbles/key"
-	"github.com/ianptkcs/tabelatuiui"
+	"github.com/ianptkcs/tabelhatuiui"
 )
 
 // Theme via env: lê MEUAPP_DMS_SETTINGS e MEUAPP_ACCENT (padrão mauve).

@@ -8,7 +8,7 @@ import (
 )
 
 // IPCArgs is the parsed form of a `bin ipc <método> [key=value...] --json`
-// invocation — the scriptable-data-source convention dcal/djobs/tabelaradar
+// invocation — the scriptable-data-source convention dcal/djobs/tabelharadar
 // all share, so a shell script or an LLM can ask a TUI's data without going
 // through the interface itself.
 type IPCArgs struct {

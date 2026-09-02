@@ -68,7 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- `tabelatuiui` agora depende de `bubbles`/`bubbletea` (para os tipos
+- `tabelhatuiui` agora depende de `bubbles`/`bubbletea` (para os tipos
   `key.Binding` usados por `Footer`/`HelpModal`).
 
 ## [0.1.1] - 2026-08-09

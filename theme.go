@@ -26,7 +26,7 @@ type Theme struct {
 	// Primary mirrors the installed DankMaterialShell's own configured
 	// accent (falling back to a manually chosen Catppuccin accent) — see
 	// resolvePrimaryHex. Consumers read the same DMS settings.json djobs and
-	// tabelaradar do, so every tool's chrome matches whatever accent DMS is
+	// tabelharadar do, so every tool's chrome matches whatever accent DMS is
 	// set to.
 	Primary lipgloss.Color
 

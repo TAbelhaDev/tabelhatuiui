@@ -1,12 +1,12 @@
 <div align="center">
 
-# TabelaTuiUI
+# TAbelhaTuiUI
 
 **Shared theme and chrome for ianptkcs's Bubble Tea TUIs.**
 
 **English** · [Português](README.pt-BR.md)
 
-[![Go Version](https://img.shields.io/github/go-mod/go-version/TabelaDev/tabelatuiui?style=flat-square&logo=go&logoColor=white&color=00ADD8)](go.mod)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/TAbelhaDev/tabelhatuiui?style=flat-square&logo=go&logoColor=white&color=00ADD8)](go.mod)
 [![Built with Bubble Tea](https://img.shields.io/badge/built%20with-Bubble%20Tea-ff69b4?style=flat-square)](https://github.com/charmbracelet/bubbletea)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue?style=flat-square)](LICENSE)
 
@@ -31,15 +31,15 @@ takes care of what everyone was redrawing from scratch in every new project.
 | Project | What it is | Origin |
 |---|---|---|
 | [djobs](https://github.com/ianptkcs/dankjobs) | TUI for scheduled jobs (systemd) | migrated |
-| [tabelaradar](https://github.com/TabelaDev/tabelaradar) | TUI that audits git repos | migrated |
-| [tabelakanban](https://github.com/TabelaDev/tabelakanban) | kanban TUI | born consuming it |
+| [tabelharadar](https://github.com/TAbelhaDev/tabelharadar) | TUI that audits git repos | migrated |
+| [tabelhakanban](https://github.com/TAbelhaDev/tabelhakanban) | kanban TUI | born consuming it |
 
 ## Installation
 
 Requires Go 1.26+.
 
 ```bash
-go get github.com/ianptkcs/tabelatuiui@latest
+go get github.com/ianptkcs/tabelhatuiui@latest
 ```
 
 ## Usage
@@ -51,7 +51,7 @@ package main
 
 import (
 	"github.com/charmbracelet/bubbles/key"
-	"github.com/ianptkcs/tabelatuiui"
+	"github.com/ianptkcs/tabelhatuiui"
 )
 
 // Theme through env: reads MEUAPP_DMS_SETTINGS and MEUAPP_ACCENT (mauve by default).

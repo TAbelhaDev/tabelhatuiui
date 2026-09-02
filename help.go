@@ -28,7 +28,7 @@ func (s HelpSection) resolved() []Binding {
 }
 
 // Binding is the keybinding type the help modal and footer consume. It's the
-// bubbles/key Binding, aliased so apps only need to import tabelatuiui (the
+// bubbles/key Binding, aliased so apps only need to import tabelhatuiui (the
 // bubbles/key types stay available if an app wants to do its own matching).
 type Binding = key.Binding
 
