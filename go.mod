@@ -1,4 +1,4 @@
-module github.com/ianptkcs/tabelhatuiui
+module github.com/TAbelhaDev/tabelhatuiui
 
 go 1.26.1
 

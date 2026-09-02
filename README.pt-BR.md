@@ -39,7 +39,7 @@ todo mundo desenhava do zero em todo projeto novo.
 Requer Go 1.26+.
 
 ```bash
-go get github.com/ianptkcs/tabelhatuiui@latest
+go get github.com/TAbelhaDev/tabelhatuiui@latest
 ```
 
 ## Uso
@@ -51,7 +51,7 @@ package main
 
 import (
 	"github.com/charmbracelet/bubbles/key"
-	"github.com/ianptkcs/tabelhatuiui"
+	"github.com/TAbelhaDev/tabelhatuiui"
 )
 
 // Theme via env: lê MEUAPP_DMS_SETTINGS e MEUAPP_ACCENT (padrão mauve).

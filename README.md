@@ -39,7 +39,7 @@ takes care of what everyone was redrawing from scratch in every new project.
 Requires Go 1.26+.
 
 ```bash
-go get github.com/ianptkcs/tabelhatuiui@latest
+go get github.com/TAbelhaDev/tabelhatuiui@latest
 ```
 
 ## Usage
@@ -51,7 +51,7 @@ package main
 
 import (
 	"github.com/charmbracelet/bubbles/key"
-	"github.com/ianptkcs/tabelhatuiui"
+	"github.com/TAbelhaDev/tabelhatuiui"
 )
 
 // Theme through env: reads MEUAPP_DMS_SETTINGS and MEUAPP_ACCENT (mauve by default).
