@@ -220,6 +220,27 @@ of assembling the path by hand.
 (grey) follow Catppuccin's semantics guide — for statuses each app colours its own
 way but with the same meaning.
 
+### Schedule package
+
+Shared schedule form + computation for TAbelha TUIs (tabelhaglue, tabelhajobs):
+
+```go
+import "github.com/TAbelhaDev/tabelhatuiui/schedule"
+
+// Build a form with local groups + schedule groups
+s := schedule.Schedule{Kind: schedule.KindDaily, Hour: 21, Minute: 0}
+form := huh.NewForm(localGroups..., schedule.Groups(s)...)
+
+// Compute OnCalendar
+expr := s.OnCalendar(time.Now()) // "*-*-* 21:00:00"
+
+// Script tails for oneshot/cycle
+tail := schedule.OneshotCleanupTail(timerPath, servicePath)
+tail := schedule.CycleRescheduleTail(recurPath, timerPath, timerName)
+```
+
+See `schedule/` package docs for full API.
+
 ### IPC
 
 ```go

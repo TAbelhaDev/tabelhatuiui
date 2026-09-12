@@ -156,6 +156,7 @@ func (m *HelpModal) contentLines(theme Theme) []string {
 	var out []string
 	dim := theme.Dim()
 	text := lipgloss.NewStyle().Foreground(theme.Text).Background(theme.Base)
+	bold := lipgloss.NewStyle().Foreground(theme.Text).Background(theme.Base).Bold(true)
 
 	for _, sec := range m.sections {
 		var keys, descs []string
@@ -176,8 +177,8 @@ func (m *HelpModal) contentLines(theme Theme) []string {
 		}
 		out = append(out, dim.Render(sec.Title))
 		for i := range keys {
-			row := keys[i] + strings.Repeat(" ", keyW-lipgloss.Width(keys[i])+2) + descs[i]
-			out = append(out, text.Render(row))
+			padded := bold.Render(keys[i]) + strings.Repeat(" ", keyW-lipgloss.Width(keys[i])+2) + text.Render(descs[i])
+			out = append(out, padded)
 		}
 		out = append(out, "")
 	}

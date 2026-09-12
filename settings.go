@@ -28,6 +28,9 @@ type SettingsModal struct {
 	// capturing means the next keypress rebinds captureID.
 	capturing bool
 	captureID string
+	// filtering means the user is typing a search query.
+	filtering bool
+	filter    string
 	// err holds the last failed Set message (e.g. a key conflict).
 	err string
 }
@@ -45,13 +48,15 @@ func (m *SettingsModal) Toggle() {
 	m.visible = !m.visible
 	if !m.visible {
 		m.capturing = false
+		m.filtering = false
+		m.filter = ""
 		m.err = ""
 	}
 }
 
 // Open and Close explicitly control visibility.
 func (m *SettingsModal) Open()  { m.visible = true }
-func (m *SettingsModal) Close() { m.visible = false; m.capturing = false; m.err = "" }
+func (m *SettingsModal) Close() { m.visible = false; m.capturing = false; m.filtering = false; m.filter = ""; m.err = "" }
 
 // SetSize records the current viewport so the modal can size/center itself.
 func (m *SettingsModal) SetSize(width, height int) {
@@ -74,11 +79,15 @@ func (m *SettingsModal) Update(msg tea.Msg) bool {
 		return m.updateCapturing(km)
 	}
 
+	if m.filtering {
+		return m.updateFiltering(km)
+	}
+
 	switch km.String() {
 	case "q", "esc", "ctrl+c":
 		m.Close()
 	case "j", "down":
-		if m.cursor < len(m.registry.order)-1 {
+		if m.cursor < len(m.filteredActions())-1 {
 			m.cursor++
 		}
 	case "k", "up":
@@ -88,7 +97,9 @@ func (m *SettingsModal) Update(msg tea.Msg) bool {
 	case "g":
 		m.cursor = 0
 	case "G":
-		m.cursor = len(m.registry.order) - 1
+		if n := len(m.filteredActions()); n > 0 {
+			m.cursor = n - 1
+		}
 	case "pgup":
 		m.cursor -= 5
 		if m.cursor < 0 {
@@ -96,18 +107,24 @@ func (m *SettingsModal) Update(msg tea.Msg) bool {
 		}
 	case "pgdown":
 		m.cursor += 5
-		if m.cursor > len(m.registry.order)-1 {
-			m.cursor = len(m.registry.order) - 1
+		if n := len(m.filteredActions()); m.cursor > n-1 {
+			m.cursor = n - 1
 		}
+	case "/":
+		m.filtering = true
+		m.filter = ""
+		m.cursor = 0
 	case "enter":
-		if m.cursor < len(m.registry.order) {
+		actions := m.filteredActions()
+		if m.cursor < len(actions) {
 			m.capturing = true
-			m.captureID = m.registry.order[m.cursor]
+			m.captureID = actions[m.cursor].ID
 			m.err = ""
 		}
 	case "r":
-		if m.cursor < len(m.registry.order) {
-			if err := m.registry.Reset(m.registry.order[m.cursor]); err != nil {
+		actions := m.filteredActions()
+		if m.cursor < len(actions) {
+			if err := m.registry.Reset(actions[m.cursor].ID); err != nil {
 				m.err = "erro ao resetar: " + err.Error()
 			} else {
 				m.err = ""
@@ -141,6 +158,49 @@ func (m *SettingsModal) updateCapturing(km tea.KeyMsg) bool {
 	m.capturing = false
 	m.captureID = ""
 	return true
+}
+
+// updateFiltering handles the search input state. esc clears and exits,
+// enter confirms and exits, backspace removes the last character, and any
+// printable character appends to the filter.
+func (m *SettingsModal) updateFiltering(km tea.KeyMsg) bool {
+	switch km.String() {
+	case "esc":
+		m.filtering = false
+		m.filter = ""
+		m.cursor = 0
+	case "enter":
+		m.filtering = false
+	case "backspace":
+		if len(m.filter) > 0 {
+			m.filter = m.filter[:len(m.filter)-1]
+		}
+		m.cursor = 0
+	default:
+		s := km.String()
+		if len(s) == 1 {
+			m.filter += s
+			m.cursor = 0
+		}
+	}
+	return true
+}
+
+// filteredActions returns the actions whose Help description contains the
+// current filter string (case-insensitive), or all actions when the filter
+// is empty.
+func (m *SettingsModal) filteredActions() []Action {
+	if m.filter == "" {
+		return m.registry.Actions()
+	}
+	needle := strings.ToLower(m.filter)
+	var out []Action
+	for _, a := range m.registry.Actions() {
+		if strings.Contains(strings.ToLower(a.Help), needle) {
+			out = append(out, a)
+		}
+	}
+	return out
 }
 
 // View renders the settings overlay centered on the screen, or "" when
@@ -191,10 +251,14 @@ func (m *SettingsModal) View(theme Theme) string {
 	var statusLine string
 	if m.capturing {
 		statusLine = theme.Warning().Render("nova tecla para '" + m.captureID + "'... (esc cancela)")
+	} else if m.filtering {
+		statusLine = theme.Info().Render("/" + m.filter + "_")
+	} else if m.filter != "" {
+		statusLine = theme.Dim().Render("/" + m.filter + " · enter rebind · / buscar · r reset · R reset todos · q/esc fechar")
 	} else if m.err != "" {
 		statusLine = theme.Error().Render(m.err)
 	} else {
-		statusLine = theme.Dim().Render("enter editar · r reset · R reset todos · q/esc fechar")
+		statusLine = theme.Dim().Render("enter editar · / buscar · r reset · R reset todos · q/esc fechar")
 	}
 
 	box := theme.Modal().Render(body + "\n\n" + statusLine)
@@ -204,7 +268,7 @@ func (m *SettingsModal) View(theme Theme) string {
 // contentRows renders each action as a row with a cursor marker, the current
 // keys (custom ones highlighted) and the description.
 func (m *SettingsModal) contentRows(theme Theme, width int) []string {
-	actions := m.registry.Actions()
+	actions := m.filteredActions()
 	// Widest keys column across all rows.
 	keyW := 0
 	for _, a := range actions {
@@ -239,7 +303,7 @@ func (m *SettingsModal) contentRows(theme Theme, width int) []string {
 		rows = append(rows, row)
 	}
 	if len(rows) == 0 {
-		rows = []string{dim.Render("nenhuma ação registrada")}
+		rows = []string{dim.Render("nenhuma ação encontrada")}
 	}
 	return rows
 }

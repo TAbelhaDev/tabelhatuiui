@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-09-12
+
+### Added
+
+- `schedule` package — schedule form + computation shared across TAbelha TUIs:
+  - `Schedule` struct with `Kind` (Oneshot/Daily/Weekly/Monthly/Cycle/Manual)
+  - `Groups()` returns huh groups for recurrence select + conditional fields
+  - `OnCalendar(now)` generates systemd OnCalendar expressions
+  - `OneshotCleanupTail` / `CycleRescheduleTail` for script generation
+  - Validators: `ValidateDDMM`, `ValidateHHMM`, `ValidateDayOfMonth`, `ValidateCycle`
+  - Parsers: `ParseDDMM`, `ParseHHMM`, `ParseCycle`
+  - `WeekdayAbbr`, `WeekdayOrder`, `Schedule.String()` for display
+
+### Added
+
+- `HelpModal` — keys agora são renderizadas em **negrito** para melhor
+  legibilidade. Seções com múltiplos `HelpSection` ficam visualmente
+  separadas com títulos em estilo dim.
+
+- `SettingsModal` — busca por descrição: pressione `/` para digitar um
+  filtro, que filtra a lista em tempo real (case-insensitive). `enter`
+  confirma e volta à navegação, `esc` limpa o filtro.
+
+### Changed
+
+- `SettingsModal` — controles de navegação agora operam sobre a lista
+  filtrada (quando há filtro ativo), não sobre todas as ações.
+
 ## [0.4.0] - 2026-08-10
 
 ### Added
